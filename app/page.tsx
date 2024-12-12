@@ -1,101 +1,202 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { QRCode } from "qrcode.react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { ExternalLink, Moon, QrCode, Sun, X } from 'lucide-react'
+import Link from "next/link"
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { socialLinks } from '@/data/socialLinks'
+// import dynamic from 'next/dynamic'
+
+interface QRCodeModalProps {
+  isOpen: boolean
+  onClose: () => void
+  link: string
+}
+
+export default function SocialLinksPage() {
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false)
+  const [currentQRLink, setCurrentQRLink] = useState('')
+  const [currentQRTitle, setCurrentQRTitle] = useState('')
+
+  useEffect(() => {
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    setIsDarkMode(darkModeMediaQuery.matches)
+
+    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
+    darkModeMediaQuery.addEventListener('change', handleChange)
+
+    return () => darkModeMediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode)
+
+  const openQRModal = (link: string, title: string) => {
+    setCurrentQRLink(link)
+    setCurrentQRTitle(title)
+    setIsQRModalOpen(true)
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+      <motion.div 
+        className="fixed inset-0 z-0"
+        animate={{
+          background: isDarkMode 
+            ? 'linear-gradient(45deg, #1a202c, #2d3748)' 
+            : 'linear-gradient(45deg, #e6f2ff, #ffffff)'
+        }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
+        >
+          {[...Array(30)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                width: Math.random() * 10 + 5,
+                height: Math.random() * 10 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                background: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.1)',
+              }}
+              animate={{
+                x: Math.random() * 100 - 50,
+                y: Math.random() * 100 - 50,
+              }}
+              transition={{
+                duration: Math.random() * 10 + 10,
+                repeat: Infinity,
+                repeatType: 'reverse',
+              }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          ))}
+        </motion.div>
+      </motion.div>
+      <div className="relative z-10 min-h-screen bg-white/80 dark:bg-gray-900/80 p-4 md:p-8 flex items-center justify-center">
+        <div className="w-full max-w-md">
+          <motion.header 
+            className="mb-8 text-center"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            Read our docs
-          </a>
+            <h1 className="mb-2 text-3xl font-bold text-blue-900 dark:text-blue-100 md:text-4xl">РГСУ в Минске</h1>
+            <p className="text-blue-600 dark:text-blue-300 text-lg">Наши социальные сети</p>
+          </motion.header>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Button
+              onClick={toggleDarkMode}
+              className="mb-6 w-full text-lg py-6"
+              variant="outline"
+            >
+              {isDarkMode ? <Sun className="mr-2 h-5 w-5" /> : <Moon className="mr-2 h-5 w-5" />}
+              {isDarkMode ? 'Светлая тема' : 'Темная тема'}
+            </Button>
+          </motion.div>
+
+          <motion.div 
+            className="grid gap-4"
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+            initial="hidden"
+            animate="show"
+          >
+            {socialLinks.map((link, index) => (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: { opacity: 1, y: 0 }
+                }}
+              >
+                <Link 
+                  href={link.href} 
+                  target="_blank"
+                  className="group block"
+                >
+                  <Card className="flex items-center gap-4 p-5 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:bg-gray-800 dark:text-white">
+                    <div className={`rounded-full ${link.bgColor} p-3 ${link.textColor} transition-colors group-hover:bg-opacity-80`}>
+                      <link.icon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="font-semibold text-blue-900 dark:text-blue-100 text-lg">{link.title}</h2>
+                      <p className="text-sm text-blue-600 dark:text-blue-300">{link.subtitle}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <ExternalLink className="h-5 w-5 text-blue-400 transition-transform group-hover:translate-x-1" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="ml-2 hidden md:flex rounded-full"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          openQRModal(link.href, link.title)
+                        }}
+                      >
+                        <QrCode className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+      <Dialog open={isQRModalOpen} onOpenChange={setIsQRModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">QR Код</DialogTitle>
+            <DialogDescription className="text-center">
+              {currentQRTitle}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="p-2 bg-white rounded-lg">
+              <QRCode 
+                value={currentQRLink} 
+                size={256}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+            <p className="text-sm text-center text-muted-foreground">
+              Сканируйте QR код для доступа к ресурсу.
+            </p>
+          </div>
+          <DialogFooter className="sm:justify-center">
+            <Button 
+              type="button" 
+              className="w-full"
+              onClick={() => setIsQRModalOpen(false)}
+            >
+              Закрыть
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }
