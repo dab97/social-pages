@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { QRCode } from "qrcode.react"
+import { QRCodeSVG } from "qrcode.react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface QRCodeModalProps {
@@ -24,7 +24,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, link 
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
             >
-              <QRCode value={link} size={256} />
+              <QRCodeSVG value={link} size={256} />
             </motion.div>
           </DialogContent>
         </Dialog>
